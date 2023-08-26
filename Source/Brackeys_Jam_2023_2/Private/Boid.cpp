@@ -71,8 +71,6 @@ void ABoid::UpdateMeshRotation()
 
 FVector ABoid::Separate(TArray<ABoid*> flock)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Number of boids %d."), flock.Num());
-
 	if (_flockManager == nullptr || flock.Num() == 0) {
 		return FVector::ZeroVector;
 	}
@@ -87,9 +85,13 @@ FVector ABoid::Separate(TArray<ABoid*> flock)
 				continue;
 			}
 
-			separationDirection = (this->GetActorLocation() - flockmate->GetActorLocation()).GetSafeNormal();
+			separationDirection = (this->GetActorLocation() - flockmate->GetActorLocation());
 
-			proximityFactor = 1.0f - (separationDirection.Size() / this->_perceptualField->GetScaledSphereRadius() + flockmate->_boidCollider->GetScaledSphereRadius());
+			proximityFactor = 1.0f - (separationDirection.Size() / this->_perceptualField->GetScaledSphereRadius());
+
+			//UE_LOG(LogTemp, Warning, TEXT("sphere Radius %f."), this->_perceptualField->GetScaledSphereRadius());
+			//UE_LOG(LogTemp, Warning, TEXT("separationDirection Size %f."), separationDirection.Size());
+			//UE_LOG(LogTemp, Warning, TEXT("seperation direction %s."), *separationDirection.ToString());
 
 			if (proximityFactor < 0.0f) {
 				continue;
@@ -136,7 +138,8 @@ FVector ABoid::GroupUp(TArray<ABoid*> flock)
 	}
 
 	FVector steering = FVector::ZeroVector;
-	FVector AveragePosition = FVector::ZeroVector;
+	FVector averagePosition = FVector::ZeroVector;
+	int32 count = 0;
 
 	for (ABoid* flockmate : flock) {
 		if (flockmate != nullptr && flockmate != this) {
@@ -145,14 +148,18 @@ FVector ABoid::GroupUp(TArray<ABoid*> flock)
 				continue;
 			}
 
-			AveragePosition += flockmate->GetActorLocation();
+			averagePosition += flockmate->GetActorLocation();
+			count++;
 		}
 	}
 
-	AveragePosition /= flock.Num();
-	steering = AveragePosition - this->GetActorLocation();
-	steering.GetSafeNormal() -= this->_boidVelocity.GetSafeNormal();
-	steering *= _flockManager->GetCohesionStrength();
+	averagePosition /= count;
+	steering = averagePosition - this->GetActorLocation();
+	//steering.GetSafeNormal() -= this->_boidVelocity.GetSafeNormal();
+	//steering *= _flockManager->GetCohesionStrength();
+
+	UE_LOG(LogTemp, Warning, TEXT("Average Position: %s. \n Current Actor Position: %s \n Force Direction %s"), *averagePosition.ToString(), *this->GetActorLocation().ToString(), *steering.ToString());
+
 	return steering;
 }
 
@@ -175,8 +182,8 @@ void ABoid::Steer(float DeltaTime)
 		}
 	}
 
-	//acceleration += Separate(flockmates);
-	//acceleration += Align(flockmates);
+	acceleration += Separate(flockmates);
+	acceleration += Align(flockmates);
 	acceleration += GroupUp(flockmates);
 
 	//if (IsObstacleAhead()) {
@@ -188,6 +195,8 @@ void ABoid::Steer(float DeltaTime)
 		acceleration += TargetForce;
 		_targetForces.Remove(TargetForce);
 	}
+
+	acceleration.X = 0;
 
 	_boidVelocity += (acceleration * DeltaTime);
 	_boidVelocity = _boidVelocity.GetClampedToSize(_flockManager->GetMinSpeed(), _flockManager->GetMaxSpeed());
