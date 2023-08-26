@@ -133,7 +133,7 @@ void AFlockManager::BuildAvoidanceSensors()
 
 		//convert point on sphere to cartesian coordinates xyz
 		SensorDirection.X = FMath::Cos(theta)*FMath::Sin(phi);
-		SensorDirection.Y = FMath::Sin(theta)*FMath::Sin(phi);
+		SensorDirection.Y = 0;
 		SensorDirection.Z = FMath::Cos(phi);
 		//add direction to list of sensors for avoidance
 		avoidanceSensors.Emplace(SensorDirection);
