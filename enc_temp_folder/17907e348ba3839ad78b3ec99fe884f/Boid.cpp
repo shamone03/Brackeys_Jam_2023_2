@@ -65,8 +65,15 @@ void ABoid::Tick(float DeltaTime)
 
 void ABoid::UpdateMeshRotation()
 {
+	FVector flipZ = _currentRotation.Euler();
+	flipZ.Z = flipZ.Z - 180;
+
+	FRotator flipperCurrentRotation = FRotator::MakeFromEuler(flipZ);
+	flipperCurrentRotation = FMath::RInterpTo(flipperCurrentRotation, this->GetActorRotation(), GetWorld()->DeltaTimeSeconds, 7.0f);
+
+	this->_boidMesh->SetWorldRotation(flipperCurrentRotation);
+
 	_currentRotation = FMath::RInterpTo(_currentRotation, this->GetActorRotation(), GetWorld()->DeltaTimeSeconds, 7.0f);
-	this->_boidMesh->SetWorldRotation(_currentRotation);
 }
 
 FVector ABoid::Separate(TArray<ABoid*> flock)

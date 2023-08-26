@@ -133,13 +133,13 @@ void ABoidCageSpawner::SpawnBoids(int numBoids)
 	boidSpawnParams.Owner = _assignedFlockManager;
 
 	for (int i = 0; i < numBoids; i++) {
-		spawnLocation.X = 0.0f;
-		spawnLocation.Y = FMath::FRandRange(-_cageCollision->GetScaledBoxExtent().X / 2, _cageCollision->GetScaledBoxExtent().X / 2);
+		spawnLocation.X = FMath::FRandRange(-_cageCollision->GetScaledBoxExtent().X / 2, _cageCollision->GetScaledBoxExtent().X / 2);
+		spawnLocation.Y = 0.0f;
 		spawnLocation.Z = FMath::FRandRange(-_cageCollision->GetScaledBoxExtent().Z / 2, _cageCollision->GetScaledBoxExtent().Z / 2);
 		spawnLocation += this->GetActorLocation();
 
 		rotationDirection = FMath::VRand();
-		rotationDirection.X = 0.0;
+		rotationDirection.Y = 0.0;
 
 		spawnRotation = rotationDirection.ToOrientationRotator();
 
