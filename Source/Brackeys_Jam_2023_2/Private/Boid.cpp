@@ -187,7 +187,7 @@ void ABoid::Steer(float DeltaTime)
 	acceleration += GroupUp(flockmates);
 
 	if (IsObstacleAhead()) {
-		acceleration = AvoidObstacle();
+		acceleration += AvoidObstacle();
 	}
 
 	for (FVector TargetForce : _targetForces)
