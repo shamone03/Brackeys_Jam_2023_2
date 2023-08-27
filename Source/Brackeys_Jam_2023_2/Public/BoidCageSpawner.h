@@ -24,6 +24,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, Category = "Boid|Spawn")
+	float _cooldown;
+	UPROPERTY(EditAnywhere, Category = "Boid|Spawn")
+	float _currentCount;
+	UPROPERTY(EditAnywhere, Category = "Boid|Spawn")
+	int32 _spawnAmount;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boid|Components")
 	UBoxComponent* _cageCollision;

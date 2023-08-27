@@ -38,6 +38,18 @@ void ABoidCageSpawner::BeginPlay()
 	SpawnBoids(_numBoidsToSpawn);
 }
 
+void ABoidCageSpawner::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	_currentCount += DeltaTime;
+
+	if (_currentCount >= _cooldown) {
+		SpawnBoids(_spawnAmount);
+		_currentCount = 0;
+	}
+}
+
 void ABoidCageSpawner::OnCageOverlapEnd(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex)
 {
 	ABoid* escapingBoid = Cast<ABoid>(otherActor);
