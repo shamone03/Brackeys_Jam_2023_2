@@ -78,6 +78,7 @@ FVector ABoid::Separate(TArray<ABoid*> flock)
 	FVector steering = FVector::ZeroVector;
 	FVector separationDirection = FVector::ZeroVector;
 	float proximityFactor = 0.0f;
+	int32 count = 0;
 
 	for (ABoid* flockmate : flock) {
 		if (flockmate != nullptr && flockmate != this) {
@@ -98,10 +99,11 @@ FVector ABoid::Separate(TArray<ABoid*> flock)
 			}
 
 			steering += (proximityFactor * separationDirection);
+			count++;
 		}
 	}
 
-	steering /= flock.Num();
+	steering /= count;
 	steering.GetSafeNormal() -= this->_boidVelocity.GetSafeNormal();
 	steering *= _flockManager->GetSeparationStrength();
 	return steering;
@@ -114,6 +116,7 @@ FVector ABoid::Align(TArray<ABoid*> flock)
 	}
 
 	FVector steering = FVector::ZeroVector;
+	int32 count = 0;
 
 	for (ABoid* flockmate : flock) {
 		if (flockmate != nullptr && flockmate != this) {
@@ -122,10 +125,11 @@ FVector ABoid::Align(TArray<ABoid*> flock)
 			}
 
 			steering += flockmate->_boidVelocity.GetSafeNormal();
+			count++;
 		}
 	}
 
-	steering /= flock.Num();
+	steering /= count;
 	steering.GetSafeNormal() -= this->_boidVelocity.GetSafeNormal();
 	steering *= _flockManager->GetAlignmentStrength();
 	return steering;
@@ -187,7 +191,7 @@ void ABoid::Steer(float DeltaTime)
 	acceleration += GroupUp(flockmates);
 
 	if (IsObstacleAhead()) {
-		acceleration += AvoidObstacle();
+		acceleration = AvoidObstacle();
 	}
 
 	for (FVector TargetForce : _targetForces)
